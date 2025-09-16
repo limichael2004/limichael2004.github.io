@@ -3,391 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Assistance in St. Joseph County</title>
+    <title>Food Assistance Interactive Map - Michiana Area</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-BQ/8W1jXz5V7o7XdM8AKOHPeRn9xQmJF6c47bOLn4dQfJ19+LXdiq0rBdilxKXwgfIlLUh88vvCTZc8lrJ3Rw==" crossorigin=""/>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f7f9fc;
             color: #333;
         }
         header {
             background-color: #4CAF50;
             color: white;
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 10px;
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
         }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: center;
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2em;
         }
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
+        #map {
+            height: calc(100vh - 150px);
         }
-        nav ul li a {
-            color: white;
+        .leaflet-popup-content {
+            width: 350px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .leaflet-popup-content h3 {
+            margin: 0 0 10px;
+            color: #4CAF50;
+            font-size: 1.3em;
+        }
+        .leaflet-popup-content p {
+            margin: 5px 0;
+        }
+        .leaflet-popup-content a {
+            color: #4CAF50;
             text-decoration: none;
             font-weight: bold;
         }
-        nav ul li a:hover {
+        .leaflet-popup-content a:hover {
             text-decoration: underline;
         }
-        section {
-            padding: 20px;
-            margin: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #4CAF50;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        table th {
-            background-color: #f2f2f2;
-        }
-        a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        #map {
-            height: 500px;
-            margin-top: 20px;
+        .leaflet-control-layers {
+            background: white;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>A Guide to Food Assistance in St. Joseph County</h1>
-        <p>Created for the Michiana Community Health Coalition - As of September 2025</p>
+        <h1>Food Assistance Interactive Map - Michiana Area</h1>
+        <p>Toggle resource types using the layers menu. Click on markers for detailed information including addresses, hours, and requirements.</p>
     </header>
-    <nav>
-        <ul>
-            <li><a href="#intro">Introduction</a></li>
-            <li><a href="#enrollment">Programs Requiring Enrollment</a></li>
-            <li><a href="#senior">Senior Resources</a></li>
-            <li><a href="#women-children">Women and Children Resources</a></li>
-            <li><a href="#immediate">Immediate Food Assistance</a></li>
-            <li><a href="#other">Other Resources</a></li>
-            <li><a href="#involved">Get Involved</a></li>
-            <li><a href="#map">Interactive Map</a></li>
-        </ul>
-    </nav>
-    <section id="intro">
-        <h2>Welcome!</h2>
-        <p>The goal of this website is to bring together all the food assistance resources located in St. Joseph County. The latest information and requirements for all listed resources can be found here. Additional resources can be found on the MCHC website: <a href="https://mchc.nd.edu" target="_blank">mchc.nd.edu</a>.</p>
-        <p>Included in this guide are:</p>
-        <ul>
-            <li>Programs Requiring Enrollment: Federal or state-funded programs with enrollment processes.</li>
-            <li>Senior Resources: Programs for seniors, including nutrition and socialization.</li>
-            <li>Women and Children Resources: Programs for pregnant women, mothers, and children.</li>
-            <li>Immediate Food Assistance: Food pantries, soup kitchens, and gardens.</li>
-            <li>Other Resources: Additional support in St. Joseph County and neighboring areas.</li>
-            <li>Get Involved: Volunteer opportunities.</li>
-        </ul>
-    </section>
-    <section id="enrollment">
-        <h2>Programs Requiring Enrollment</h2>
-        <h3>Supplemental Nutrition Assistance Program (SNAP)</h2>
-        <p>SNAP provides funds for purchasing food via an EBT card.</p>
-        <p>Requirements: Indiana residency, U.S. citizenship or qualified non-citizen, IMPACT job training if unemployed, assets under $5,000, income limits:</p>
-        <table>
-            <tr><th>Household</th><th>Gross Income Limit</th><th>Net Income Limit</th></tr>
-            <tr><td>1</td><td>$1,632</td><td>$1,255</td></tr>
-            <tr><td>2</td><td>$2,215</td><td>$1,704</td></tr>
-            <tr><td>3</td><td>$2,798</td><td>$2,152</td></tr>
-            <tr><td>4</td><td>$3,380</td><td>$2,600</td></tr>
-            <tr><td>5</td><td>$3,963</td><td>$3,049</td></tr>
-            <tr><td>6</td><td>$4,546</td><td>$3,497</td></tr>
-            <tr><td>7</td><td>$5,129</td><td>$3,945</td></tr>
-            <tr><td>8</td><td>$5,712</td><td>$4,394</td></tr>
-            <tr><td>Every Additional</td><td>+$583</td><td>+$449</td></tr>
-        </table>
-        <p>Sign up: <a href="https://fssabenefits.in.gov/bp/#/" target="_blank">Online</a> or at offices:</p>
-        <ul>
-            <li>3575 Moreau Court, Suite 300, South Bend, IN 46617 - Phone: (800) 403-0864</li>
-            <li>102 N. Center St., Suite 500, Mishawaka, IN 46544 - Phone: (800) 403-0864</li>
-        </ul>
-        <h3>Temporary Assistance for Needy Families (TANF)</h3>
-        <p>TANF provides financial assistance for families with children.</p>
-        <p>Requirements: Families with children under 18, assets under $1,000, income limits:</p>
-        <table>
-            <tr><th>Household</th><th>Gross Income Limit</th><th>Net Income Limit</th></tr>
-            <tr><td>1</td><td>$286.75</td><td>$248</td></tr>
-            <tr><td>2</td><td>$471.75</td><td>$409</td></tr>
-            <tr><td>3</td><td>$592.00</td><td>$513</td></tr>
-            <tr><td>4</td><td>$712.25</td><td>$617</td></tr>
-            <tr><td>5</td><td>$832.50</td><td>$721</td></tr>
-            <tr><td>6</td><td>$952.75</td><td>$825</td></tr>
-            <tr><td>7</td><td>$1,073.00</td><td>$929</td></tr>
-            <tr><td>8</td><td>$1,193.25</td><td>$1,033</td></tr>
-            <tr><td>9</td><td>$1,313.50</td><td>$1,137</td></tr>
-            <tr><td>10</td><td>$1,433.75</td><td>$1,241</td></tr>
-            <tr><td>Every Additional</td><td>+$120.25</td><td>+$104</td></tr>
-        </table>
-        <p>Sign up: <a href="https://fssabenefits.in.gov/bp/#/" target="_blank">Online</a> or at the same offices as SNAP.</p>
-    </section>
-    <section id="senior">
-        <h2>Senior Resources</h2>
-        <h3>Commodity Supplemental Food Program (CSFP)</h3>
-        <p>Monthly food box for seniors 60+.</p>
-        <p>Requirements: 60+, St. Joseph County resident, income limits:</p>
-        <table>
-            <tr><th>Household</th><th>Monthly Gross</th><th>Annual Gross</th></tr>
-            <tr><td>1</td><td>$1,957</td><td>$23,484</td></tr>
-            <tr><td>2</td><td>$2,644</td><td>$31,728</td></tr>
-            <tr><td>3</td><td>$3,332</td><td>$39,984</td></tr>
-            <tr><td>4</td><td>$4,019</td><td>$48,228</td></tr>
-            <tr><td>5</td><td>$4,707</td><td>$56,484</td></tr>
-            <tr><td>6</td><td>$5,394</td><td>$64,728</td></tr>
-            <tr><td>7</td><td>$6,082</td><td>$72,984</td></tr>
-            <tr><td>8</td><td>$6,769</td><td>$81,228</td></tr>
-            <tr><td>Every Additional</td><td>+$688</td><td>+$8,244</td></tr>
-        </table>
-        <p>Contact: Food Bank of Northern Indiana, 702 S. Chapin St, South Bend, IN 46601 - Phone: (574) 232-9986 ext. 137 - Email: blove@feedindiana.org - <a href="https://feedindiana.org/programs/commodity-supplemental-food-program-csfp" target="_blank">Website</a></p>
-        <h3>Senior Lunch Sites by Real Services</h3>
-        <p>Hot lunch and socialization for seniors 60+.</p>
-        <table>
-            <tr><th>Name</th><th>Address</th><th>Phone</th></tr>
-            <tr><td>Battell Community Center</td><td>904 N. Main St., Mishawaka</td><td>(574) 256-2325</td></tr>
-            <tr><td>100 Center High Rise Apartments</td><td>100 N. Center St., Mishawaka</td><td>(574) 259-1611</td></tr>
-            <tr><td>1Roof Southeast Neighborhood Center</td><td>405 E. Dubail Ave, South Bend</td><td>(574) 381-8981</td></tr>
-            <tr><td>Charles Black Community Center</td><td>3419 W. Washington, South Bend</td><td>(574) 229-5911</td></tr>
-            <tr><td>Fairington Apartments of South Bend</td><td>1220 Fairington Circle, South Bend</td><td>(574) 291-5597</td></tr>
-            <tr><td>Heritage Place at LaSalle Square Apartments</td><td>3224 Ardmore Trail, South Bend</td><td>(574) 286-0916</td></tr>
-            <tr><td>Karl King Riverbend Tower</td><td>515 E. Monroe St., South Bend</td><td>(574) 232-4934</td></tr>
-            <tr><td>Sanctuary Trinity Tower</td><td>316 S. Martin Luther King Jr. Blvd., South Bend</td><td>(574) 234-7278</td></tr>
-            <tr><td>The Legion</td><td>302 Legion Drive, Walkerton</td><td>(574) 334-1047</td></tr>
-            <tr><td>Shepherd’s Heart Fellowship</td><td>58362 Beech Road, Osceola</td><td>(574) 674-6503</td></tr>
-        </table>
-        <p>Contact: Nutrition Office - Phone: (574) 284-7168 - Email: nutrition@realservices.org - Nutrition Manager: Jarena Baker, jarena.baker@realservices.org - Website: <a href="https://realservices.org/meals-and-nutrition/senior-nutrition-sites/" target="_blank">Link</a></p>
-        <h3>Meals on Wheels by Real Services</h3>
-        <p>Home-delivered meals for homebound seniors 60+.</p>
-        <p>Contact: 1151 S Michigan St, South Bend, IN 46601 - Phone: (574) 256-1649 - Email: MOW@realservices.org - <a href="https://realservices.org/meals-and-nutrition/home-delivered-meals/" target="_blank">Website</a></p>
-        <h3>Senior Farmers Market Nutrition Program</h3>
-        <p>Funds for locally grown produce for seniors 60+.</p>
-        <p>Eligibility: 60+, income at or below 185% poverty.</p>
-        <p>Contact: Real Services - Phone: (574) 248-7160 (Tiffany Love) - <a href="https://realservices.org/meals-and-nutrition/" target="_blank">Website</a></p>
-        <h3>Senior Nutrition Program at Food Bank of Northern Indiana</h3>
-        <p>Monthly shelf-stable food box for low-income senior housing.</p>
-        <p>Contact: 702 Chapin St, South Bend, IN 46601 - Phone: (574) 232-9986 ext. 129 - <a href="https://feedindiana.org/programs/senior-nutrition-program" target="_blank">Website</a></p>
-        <h3>Food Pantry Delivery</h3>
-        <p>Delivery for homebound seniors.</p>
-        <ul>
-            <li>Clay Church Firehouse Campus: 17646 Cleveland Road, South Bend, IN 46635 - Phone: (574) 272-8068</li>
-            <li>St. Vincent de Paul Society Center: 520 Crescent Avenue, South Bend, IN 46617 - Phone: (574) 234-6000 option 1</li>
-        </ul>
-    </section>
-    <section id="women-children">
-        <h2>Women and Children Resources</h2>
-        <h3>Women, Infants, and Children Program (WIC)</h3>
-        <p>Nutrition program for women and children.</p>
-        <p>Requirements: Indiana residents, nutritional risk, income limits:</p>
-        <table>
-            <tr><th>Household</th><th>Annual</th><th>Monthly</th><th>Weekly</th></tr>
-            <tr><td>1</td><td>$28,953</td><td>$2,413</td><td>$557</td></tr>
-            <tr><td>2</td><td>$39,128</td><td>$3,261</td><td>$753</td></tr>
-            <tr><td>3</td><td>$49,303</td><td>$4,109</td><td>$949</td></tr>
-            <tr><td>4</td><td>$59,478</td><td>$4,957</td><td>$1,144</td></tr>
-            <tr><td>5</td><td>$69,953</td><td>$5,805</td><td>$1,340</td></tr>
-            <tr><td>6</td><td>$79,828</td><td>$6,653</td><td>$1,536</td></tr>
-            <tr><td>7</td><td>$90,003</td><td>$7,501</td><td>$1,731</td></tr>
-            <tr><td>8</td><td>$100,178</td><td>$8,349</td><td>$1,927</td></tr>
-            <tr><td>Every Additional</td><td>+$10,175</td><td>+$848</td><td>+$196</td></tr>
-        </table>
-        <p>Clinics:</p>
-        <ul>
-            <li>Mishawaka: 201 Lincolnway West, Mishawaka, IN 46544 - Phone: (574) 647-2175</li>
-            <li>South Bend: 325 N. Lafayette Blvd, South Bend, IN 46601 - Phone: (574) 647-2100</li>
-            <li>Southeast Neighborhood Center: 405 E. Dubail Ave, South Bend, IN - Phone: (574) 393-9658</li>
-            <li>North Liberty: 300 South Main Street, North Liberty, IN 46554 - Phone: (574) 647-2175</li>
-        </ul>
-        <p>Website: <a href="https://www.in.gov/health/wic/home/" target="_blank">Link</a></p>
-        <h3>WIC Farmers Market Nutrition Program (FMNP)</h3>
-        <p>Funds for locally grown produce.</p>
-        <p>Enroll through WIC clinics.</p>
-        <p>Website: <a href="https://www.fns.usda.gov/fmnp/wic-farmers-market-nutrition-program" target="_blank">Link</a></p>
-        <h3>St. Margaret's House</h3>
-        <p>Day center for women and children.</p>
-        <p>Address: 117 N Lafayette Blvd, South Bend, IN 46601 - Phone: (574) 234-7795 - Email: info@stmargaretshouse.org - <a href="https://stmargaretshouse.org/" target="_blank">Website</a></p>
-        <h3>School Backpack Programs</h3>
-        <p>Food 4 Kids by Food Bank of Northern Indiana: Weekend food bags for K-6 students.</p>
-        <p>Website: <a href="https://feedindiana.org/programs/food-4-kids-backpack-program" target="_blank">Link</a></p>
-        <p>Cultivate Student Backpack Program: Weekend meals for students.</p>
-        <p>Participating Schools (contact school for details):</p>
-        <ul>
-            <li>Career Academy - 3801 Crescent Circle, South Bend, IN 46628</li>
-            <li>Charles Martin Youth Center</li>
-            <li>Clay Church Pantry - 17646 Cleveland Road, South Bend, IN 46635</li>
-            <li>Clay International Academy - 52900 Lily Rd, South Bend, IN 46637</li>
-            <li>Coquillard Elementary - 1245 N Sheridan St, South Bend, IN 46628</li>
-            <li>Darden Elementary - 18645 Janet St, South Bend, IN 46637</li>
-            <li>Goodwill Excel Center - 2721 Kenwood Avenue, South Bend, IN 46628</li>
-            <li>Grissom Middle School - 13881 Kern Rd, Mishawaka, IN 46544</li>
-            <li>Hannah’s House - (approximate) 41.694, -86.175 (from tool)</li>
-            <li>Harrison Elementary - 3302 Western Ave, South Bend, IN 46619</li>
-            <li>Health Linc - 420 W. 4th St, Mishawaka, IN 46544</li>
-            <li>Ivy Tech South Bend - 220 Dean Johnson Blvd, South Bend, IN 46601</li>
-            <li>Kroc Center - 900 W Western Ave, South Bend, IN 46601</li>
-            <li>LaVille Elementary School - 12645 Tyler Rd, Lakeville, IN 46536</li>
-            <li>Lifeline</li>
-            <li>Madison STEAM Academy - 832 N Lafayette Blvd, South Bend, IN 46601</li>
-            <li>McKinley Elementary - 228 N Greenlawn Ave, South Bend, IN 46617</li>
-            <li>Monroe Primary Center - (approximate) 41.669, -86.258</li>
-            <li>Navarre Middle School - 4702 W Ford St, South Bend, IN 46619</li>
-            <li>Notre Dame Graduate School - (approximate) 41.704, -86.237</li>
-            <li>Nuner Fine Arts Academy - 2716 Pleasant St, South Bend, IN 46615</li>
-            <li>Paramount School of Excellence - 3414 Hepler Street, South Bend, IN 46635</li>
-            <li>Resurrection Lutheran Academy - 6840 Nimtz Pkwy, South Bend, IN 46628</li>
-            <li>SALT Program</li>
-            <li>SBCSC Adult Education - (approximate) 41.683, -86.25</li>
-            <li>St. Adalbert’s Elementary - 519 S Olive St, South Bend, IN 46619</li>
-            <li>St. Joseph County Public Library - 304 S. Main St, South Bend, IN 46601</li>
-            <li>Warren Primary Center - (approximate) 41.676, -86.25</li>
-            <li>Washington High School - 4747 W. Washington, South Bend, IN 46619</li>
-            <li>Wilson Primary Center - (approximate) 41.667, -86.251</li>
-        </ul>
-        <p>Website: <a href="https://cultivatefoodrescue.com/backpack-program/" target="_blank">Link</a></p>
-    </section>
-    <section id="immediate">
-        <h2>Immediate Food Assistance</h2>
-        <h3>Local Food Pantries</h3>
-        <table>
-            <tr><th>Name</th><th>Address</th><th>Phone</th><th>Details</th></tr>
-            <tr><td>Berean Community Service</td><td>601 Colfax Ave., South Bend, IN 46601</td><td>(574) 234-2784</td><td>Open first and third Thursday: 3pm-5pm. For all St. Joseph County residents.</td></tr>
-            <tr><td>Broadway Christian Parish Food Pantry and Soup Kitchen</td><td>1412 Carroll St, South Bend, IN 46613</td><td>(574) 289-0333</td><td>Open Tue - Thu 8:30am - 10:30am. Breakfast Mon-Thu 8am-10am. Serves St. Joseph County residents.</td></tr>
-            <tr><td>Catholic Charities West Region Office</td><td>1817 Miami St, South Bend, IN 46613</td><td>(574) 234-3111</td><td>Open Wed 10am-12pm and 5pm-7pm. Serves St. Joseph County residents.</td></tr>
-            <tr><td>Christian Community Food Pantry</td><td>625 Roosevelt Rd, Walkerton, IN 46574</td><td>(574) 586-9210</td><td>Open third Tuesday 11:30am-1:30pm and 5:30pm-6:45pm. For 46574 zip code.</td></tr>
-            <tr><td>Clay Church Firehouse Campus</td><td>17646 Cleveland Rd, South Bend, IN 46635</td><td>(574) 272-8068</td><td>Open Mon 12pm-3pm and Th 9am-12pm. Serves St. Joseph County. Deliveries available.</td></tr>
-            <tr><td>Community Food Pantry of St. Joseph County</td><td>702 Chapin St, South Bend, IN 46601</td><td>(574) 232-9986</td><td>Open Mon/Fri 9am-4pm, Wed 10am-6pm. Serves all St. Joseph County once a month. Bring proof of name and address.</td></tr>
-            <tr><td>Emmaus Lutheran Church Food Pantry</td><td>929 E. Milton St, South Bend, IN 46613</td><td>(773) 910-5530</td><td>Tuesday 5pm-7pm by appointment. For 46613 zip code. Bring proof of name and address.</td></tr>
-            <tr><td>Faith Baptist Church</td><td>923 Blaine Ave, South Bend, IN 46616</td><td>(574) 233-6428</td><td>Open 3pm-5pm every Tue except first of month. For 46601, 46616, 46628 zip codes.</td></tr>
-            <tr><td>First Brethren Church of South Bend</td><td>4909 S Ironwood Dr, South Bend, IN 46614</td><td>(574) 291-4909</td><td>Open 1st and 3rd Fri 10am-12pm. Open to all St. Joseph County residents.</td></tr>
-            <tr><td>Downtown Soup Kitchen & Pantry First United Methodist Church</td><td>333 N Main St, South Bend, IN 46601</td><td>(574) 233-9463 x574</td><td>Kitchen: Mon, Wed, Fri 11:30am-12:15pm. Pantry: Tue 10am-1pm. Serves all St. Joseph County.</td></tr>
-            <tr><td>God’s Grace Food Pantry Layman Chapel</td><td>303 S Kenmore St, South Bend, IN 46619</td><td>(574) 344-8295</td><td>Second and fourth Sat 11am-1pm. Serves 46619 zip code.</td></tr>
-            <tr><td>Hope for the Hungry Food Pantry</td><td>1007 Portage Ave, South Bend, IN 46628</td><td>(574) 514-6308</td><td>Third Sat 11am-1pm. Serves St. Joseph Co residents.</td></tr>
-            <tr><td>Kingdom Life Christian Cathedral</td><td>707 Sherman Ave, South Bend, IN 46616</td><td>(574) 246-9110</td><td>First and Third Wed 11am-1pm; Sat 11am-1pm. All St. Joseph Co.</td></tr>
-            <tr><td>MAC Pantry, Albright United Methodist Church</td><td>504 W. Mishawaka Ave, Mishawaka, IN 46545</td><td>(574) 259-1975</td><td>Tue 6pm-7:30pm; Fri 10am-11:30am. Serves 46544, 46545, 46530, 46561 zip codes.</td></tr>
-            <tr><td>Mishawaka Food Pantry and Soup Kitchen</td><td>315 Lincolnway West, Mishawaka, IN 46544</td><td>(574) 220-6213</td><td>M-F 10am-2pm. Soup Kitchen W/Th 10:30am-1:30pm. Pantry for 46530, 46544, 46545, 46561.</td></tr>
-            <tr><td>Monroe Circle Community Center</td><td>526 Western Ave, South Bend, IN 46601</td><td>(574) 287-4259</td><td>Second Sat 9am-11am, Fourth Tue 9am-11am. Serves 46601 residents.</td></tr>
-            <tr><td>Needs for Neighbors Food Pantry/ Praise Fellowship SDA Church</td><td>54301 Maple Lane, South Bend, IN 46635</td><td>(574) 271-7378</td><td>Last Wed 5:30pm-7pm. Serves all St. Joseph Co. ID required.</td></tr>
-            <tr><td>New Carlisle Community Food Pantry</td><td>300 Compton St, New Carlisle, IN 46552</td><td>(574) 654-3344</td><td>Friday 10am-12pm. Serves St. Joseph and LaPorte Co.</td></tr>
-            <tr><td>Osceola United Methodist Church</td><td>431 N Beech Rd, Osceola, IN 46561</td><td>(574) 679-4435</td><td>Third Sat 11am-1pm. Serves all St. Joseph County.</td></tr>
-            <tr><td>River Park United Methodist Church Food Pantry</td><td>920 S. 23rd St, South Bend, IN 46615</td><td>(574) 288-6243</td><td>Wed and Sat 10am-12pm. Serves 46615 zip code.</td></tr>
-            <tr><td>Salvation Army of South Bend Walter A. Meyer Food Pantry</td><td>900 W. Western Ave, South Bend, IN 46601</td><td>(574) 233-9471</td><td>Mon, Tue, Fri 9am-12pm. Resident in St. Joseph Co.</td></tr>
-            <tr><td>St. Paul Bethel Baptist Food Pantry</td><td>621 Lindsey St, South Bend, IN 46616</td><td>(574) 288-6667</td><td>First and third Thursday 10am-1pm. Serves St. Joseph Co.</td></tr>
-            <tr><td>St. Vincent de Paul Society of St. Joseph County</td><td>520 Crescent Ave, South Bend, IN 46617</td><td>(574) 234-6000 x1</td><td>T/Th 10am-2pm. Serves 46601 and 46617 in pantry, others delivered.</td></tr>
-            <tr><td>Sunnyside Presbyterian Church</td><td>115 S. Francis St, South Bend, IN 46617</td><td>(574) 287-1524</td><td>M/Th 9:30am-11:30am. Serves St. Joseph Co.</td></tr>
-            <tr><td>West Side Church of Christ</td><td>22987 Edison Rd, South Bend, IN 46628</td><td>(574) 234-3866</td><td>Third Sat 9am-10:30am. Serves St. Joseph Co.</td></tr>
-        </table>
-        <p>For the most updated list, visit <a href="https://feedindiana.org/food-pantries" target="_blank">feedindiana.org/food-pantries</a>.</p>
-        <h3>Local Soup Kitchens and Meal Locations</h3>
-        <table>
-            <tr><th>Name</th><th>Address</th><th>Phone</th><th>Details</th></tr>
-            <tr><td>Broadway Christian Parish Food Pantry and Soup Kitchen</td><td>1412 Carroll St, South Bend, IN 46613</td><td>(574) 289-0333</td><td>Breakfast Mon-Thu 8am-10am. Serves St. Joseph County.</td></tr>
-            <tr><td>Hope Ministries</td><td>432 S Lafayette Blvd, South Bend, IN 46601</td><td>(574) 235-4250</td><td>Lunch 11am-12:30pm, Dinner 6pm-7:30pm daily. Serves St. Joseph Co.</td></tr>
-            <tr><td>Mishawaka Food Pantry and Soup Kitchen</td><td>315 Lincolnway West, Mishawaka, IN 46544</td><td>(574) 220-6213</td><td>Soup Kitchen W/Th 10:30am-1:30pm. No restrictions.</td></tr>
-            <tr><td>Our Lady of the Road</td><td>744 S Main St, South Bend, IN 46601</td><td>(574) 334-7387</td><td>Fri-Sun 8am-11:30am, Wed 11am-1pm.</td></tr>
-            <tr><td>St Augustine Catholic Church</td><td>1501 W Washington St, South Bend, IN 46628</td><td>(574) 234-6334</td><td>Mon, Wed, Fri 11am-12:30pm. Serves St. Joseph Co.</td></tr>
-            <tr><td>St. Margaret’s House Soup Kitchen</td><td>117 S. Francis St, South Bend, IN 46617</td><td>(574) 234-7795</td><td>M-F 10am-4pm. Serves women and children in St. Joseph Co.</td></tr>
-            <tr><td>St. Michael and All Angels Episcopal Church</td><td>53720 N Ironwood Rd, South Bend, IN 46635</td><td>(574) 243-0632</td><td>Third Sat 11am-1pm. Serves St. Joseph Co.</td></tr>
-        </table>
-        <h3>Unity Gardens</h3>
-        <p>Free pick fresh produce gardens.</p>
-        <p>Main: 3701 Prast Blvd, South Bend, IN 46628 - Phone: (574) 315-4361 - <a href="http://www.theunitygardens.org/" target="_blank">Website</a></p>
-        <table>
-            <tr><th>Name</th><th>Address</th><th>Contact</th></tr>
-            <tr><td>Marshall County Unity Garden</td><td>1305 West Harrison St, Plymouth</td><td>574-780-6294</td></tr>
-            <tr><td>Miami Village Unity Garden</td><td>1817 Miami Street, South Bend</td><td>574-234-3111</td></tr>
-            <tr><td>Monroe Park Unity Garden</td><td>601 Carroll St., South Bend</td><td>574-386-3216</td></tr>
-            <tr><td>Field of Dreams</td><td>NW Corner of Angela BLVD and SR933, South Bend</td><td>574-315-3843 (text only)</td></tr>
-            <tr><td>Wabash Grove Unity Garden</td><td>2116 Wabash St., South Bend</td><td>574-344-3385</td></tr>
-            <tr><td>Marshall Traditional School Unity Garden</td><td>1433 Byron Dr, South Bend</td><td>574-229-2167</td></tr>
-            <tr><td>Eddy Street Unity Garden</td><td>317 S. Eddy Street, South Bend</td><td>574-323-4280</td></tr>
-            <tr><td>Jewish Federation Unity Garden</td><td>3202 Shalom Way, South Bend</td><td>574-233-1164</td></tr>
-            <tr><td>McKinley School Growing Champions</td><td>228 N Greenlawn Ave, South Bend</td><td>574-283-8570</td></tr>
-            <tr><td>Saint Michael Family Garden</td><td>53720 Ironwood Drive, South Bend</td><td>574-298-4987</td></tr>
-            <tr><td>St Peter's UCC Unity Garden</td><td>915 N Ironwood, South Bend</td><td>574-340-8292</td></tr>
-            <tr><td>Chapin Park Unity Garden</td><td>632 Portage Ave, South Bend</td><td>614-800-2070</td></tr>
-            <tr><td>Bread of Life</td><td>6770 Michigan Rd, Plymouth</td><td>574-936-1006</td></tr>
-            <tr><td>IU Medical Unity Garden</td><td>1234 N Notre Dame Ave, South Bend</td><td>317-760-9555</td></tr>
-            <tr><td>Madison Square Unity Garden</td><td>1230 E Madison Street, South Bend</td><td>574-315-6542</td></tr>
-            <tr><td>Zion Unity Garden</td><td>224 E. Jefferson Blvd, South Bend</td><td>574-309-6820</td></tr>
-            <tr><td>Clay Church Unity Garden</td><td>17646 Cleveland Rd, South Bend</td><td>574-220-6454</td></tr>
-            <tr><td>Clay International Academy Unity Garden</td><td>52900 Lily Rd., South Bend</td><td>574-393-4334</td></tr>
-            <tr><td>Youth Service Bureau Unity Garden</td><td>411 Caterina St, South Bend</td><td>307-899-4985</td></tr>
-            <tr><td>West LaSalle Unity Garden</td><td>501 W. LaSalle, South Bend</td><td>574-520-8444</td></tr>
-            <tr><td>Navarre School Unity Garden</td><td>4702 Ford St, South Bend</td><td>574-309-0245</td></tr>
-            <tr><td>Ducomb Unity Garden</td><td>4161 Lanthrop St, South Bend</td><td>574-236-2122 ext. 6934</td></tr>
-            <tr><td>Lakeville Garden</td><td>621 Sunset Dr, Lakeville</td><td>574-307-4181</td></tr>
-            <tr><td>North Liberty Unity Garden</td><td>105 East Market Street, North Liberty</td><td>574-656-3664</td></tr>
-            <tr><td>Broadway Unity Garden</td><td>1412 Carroll St., South Bend</td><td>219-243-0167</td></tr>
-            <tr><td>South Bend Mutual Homes</td><td>1002 Oak St, South Bend</td><td>574-334-3948</td></tr>
-            <tr><td>Success Academy Unity Garden</td><td>3408 Ardmore Trail, South Bend</td><td>574-807-1406</td></tr>
-            <tr><td>Far Northwest Unity Garden</td><td>1833 N Johnson St, South Bend</td><td>574-318-9289</td></tr>
-            <tr><td>Grace United</td><td>3012 S Twyckenham Dr, South Bend</td><td>574-288-4789</td></tr>
-            <tr><td>Walkerton Unity Garden</td><td>406 Adams St, Walkerton</td><td>574-279-0177</td></tr>
-            <tr><td>Butterfly Garden at Cathedral St. James</td><td>117 N Lafayette Blvd, South Bend</td><td>574-232-4837</td></tr>
-            <tr><td>Coquillard</td><td>1245 N Sheridan, South Bend</td><td>773-255-7170</td></tr>
-            <tr><td>First Presbyterian Garden</td><td>413 W Colfax Ave, South Bend</td><td>574-234-4159</td></tr>
-            <tr><td>Indiana Health Center Bendix</td><td>1010 N Bendix Dr, South Bend</td><td>574-240-757</td></tr>
-            <tr><td>Kroc Center Unity Garden</td><td>900 W Western Ave, South Bend</td><td>574-213-8923</td></tr>
-            <tr><td>LaSalle Square</td><td>3701 Prast Blvd, South Bend</td><td>574-222-2266</td></tr>
-            <tr><td>Living Stones commUNITY Garden</td><td>718 Donmoyer Ave, South Bend</td><td>574-261-6450</td></tr>
-            <tr><td>McKinley Terrace Unity Garden</td><td>3227 Sorin St, South Bend</td><td>574-276-3601</td></tr>
-            <tr><td>Osceola Neighborhood Unity Garden</td><td>117 N Olive St, South Bend</td><td>574-302-6455</td></tr>
-            <tr><td>Prince of Peace Unity Garden</td><td>53105 N Ironwood Rd, South Bend</td><td>574-210-5097</td></tr>
-            <tr><td>Reflections Counseling</td><td>3220 E Jefferson Blvd, South Bend</td><td>574-222-2466</td></tr>
-            <tr><td>River Bend Cancer Center</td><td>3516 E Jefferson Blvd, South Bend</td><td>574-287-4197</td></tr>
-        </table>
-        <p>For updated list: <a href="https://www.theunitygardens.org/gardens.html" target="_blank">Link</a></p>
-    </section>
-    <section id="other">
-        <h2>Other Resources</h2>
-        <p>Community Health Workers: Support and resource connections.</p>
-        <p>Services: Maternal/Infant Health, Lead Poisoning Prevention, by census tracts.</p>
-        <p>Contact: Various emails like jrobinson@sjcindiana.gov for maternal health. Website: <a href="https://www.in.gov/localhealth/stjosephcounty/Community-Health-Workers/" target="_blank">Link</a> - Phone: (574) 235-9750</p>
-        <p>Linden Avenue Farmers Market: Low-cost fresh produce.</p>
-        <p>Location: MLK Dream Center, 1522 Linden Ave, South Bend, IN 46628 - Dates: June to October (check website) - <a href="https://www.southbendin.gov/food-security/" target="_blank">Website</a></p>
-        <p>St. Joseph Public Library: Resources for food, cash, transportation assistance.</p>
-        <p>Address: 304 S. Main St, South Bend, IN 46601 - Phone: (574) 282-4646 - <a href="https://sjcpl.org/services-resources/" target="_blank">Website</a></p>
-    </section>
-    <section id="involved">
-        <h2>Get Involved</h2>
-        <p>Volunteer Opportunities: Most organizations welcome volunteers. Contact them directly.</p>
-        <p>Organizations always needing volunteers:</p>
-        <ul>
-            <li>Cultivate Food Rescue: <a href="https://cultivatefoodrescue.com" target="_blank">Website</a></li>
-            <li>Food Bank of Northern Indiana: <a href="https://feedindiana.org" target="_blank">Website</a></li>
-            <li>Real Services: <a href="https://realservices.org" target="_blank">Website</a></li>
-        </ul>
-    </section>
-    <section id="map">
-        <h2>Interactive Map of Michiana Area Resources</h2>
-        <p>Explore the locations on the map below. Click on markers for details. (Note: Coordinates are approximate; for precise navigation, use addresses with GPS apps.)</p>
-        <div id="map"></div>
-    </section>
+    <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         var map = L.map('map').setView([41.676, -86.25], 12);
@@ -395,68 +75,120 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        var locations = [
-            {lat: 41.666, lng: -86.242, title: "South Bend FSSA Office", info: "3575 Moreau Court, Suite 300, South Bend, IN 46617 - SNAP/TANF"},
-            {lat: 41.661, lng: -86.189, title: "Mishawaka FSSA Office", info: "102 N. Center St., Suite 500, Mishawaka, IN 46544 - SNAP/TANF"},
-            {lat: 41.675, lng: -86.255, title: "Food Bank of Northern Indiana", info: "702 S. Chapin St, South Bend, IN 46601 - CSFP, Senior Nutrition"},
-            {lat: 41.661, lng: -86.174, title: "Battell Community Center", info: "904 N. Main St., Mishawaka - Senior Lunch"},
-            {lat: 41.661, lng: -86.189, title: "100 Center High Rise Apartments", info: "100 N. Center St., Mishawaka - Senior Lunch"},
-            {lat: 41.663, lng: -86.251, title: "1Roof Southeast Neighborhood Center", info: "405 E. Dubail Ave, South Bend - Senior Lunch"},
-            {lat: 41.670, lng: -86.313, title: "Charles Black Community Center", info: "3419 W. Washington, South Bend - Senior Lunch"},
-            {lat: 41.709, lng: -86.224, title: "Fairington Apartments of South Bend", info: "1220 Fairington Circle, South Bend - Senior Lunch"},
-            {lat: 41.659, lng: -86.306, title: "Heritage Place at LaSalle Square Apartments", info: "3224 Ardmore Trail, South Bend - Senior Lunch"},
-            {lat: 41.677, lng: -86.244, title: "Karl King Riverbend Tower", info: "515 E. Monroe St., South Bend - Senior Lunch"},
-            {lat: 41.675, lng: -86.251, title: "Sanctuary Trinity Tower", info: "316 S. Martin Luther King Jr. Blvd., South Bend - Senior Lunch"},
-            {lat: 41.465, lng: -86.481, title: "The Legion", info: "302 Legion Drive, Walkerton - Senior Lunch"},
-            {lat: 41.657, lng: -86.064, title: "Shepherd’s Heart Fellowship", info: "58362 Beech Road, Osceola - Senior Lunch"},
-            {lat: 41.722, lng: -86.209, title: "Clay Church Firehouse Campus", info: "17646 Cleveland Road, South Bend, IN 46635 - Food Pantry Delivery"},
-            {lat: 41.683, lng: -86.243, title: "St. Vincent de Paul Society Center", info: "520 Crescent Avenue, South Bend, IN 46617 - Food Pantry Delivery"},
-            {lat: 41.661, lng: -86.173, title: "Mishawaka WIC Clinic", info: "201 Lincolnway West, Mishawaka, IN 46544 - WIC"},
-            {lat: 41.675, lng: -86.255, title: "South Bend WIC Clinic", info: "325 N. Lafayette Blvd, South Bend, IN 46601 - WIC"},
-            {lat: 41.534, lng: -86.427, title: "North Liberty WIC Clinic", info: "300 South Main Street, North Liberty, IN 46554 - WIC"},
-            {lat: 41.675, lng: -86.255, title: "St. Margaret's House", info: "117 N Lafayette Blvd, South Bend, IN 46601 - Women and Children"},
-            {lat: 41.684, lng: -86.243, title: "Berean Community Service", info: "601 Colfax Ave., South Bend, IN 46601 - Food Pantry"},
-            {lat: 41.654, lng: -86.261, title: "Broadway Christian Parish", info: "1412 Carroll St, South Bend, IN 46613 - Food Pantry/Soup Kitchen"},
-            {lat: 41.650, lng: -86.232, title: "Catholic Charities West Region Office", info: "1817 Miami St, South Bend, IN 46613 - Food Pantry"},
-            {lat: 41.416, lng: -86.489, title: "Christian Community Food Pantry", info: "625 Roosevelt Rd, Walkerton, IN 46574 - Food Pantry"},
-            {lat: 41.722, lng: -86.209, title: "Community Food Pantry of St. Joseph County", info: "702 Chapin St, South Bend, IN 46601 - Food Pantry"},
-            {lat: 41.656, lng: -86.229, title: "Emmaus Lutheran Church Food Pantry", info: "929 E. Milton St, South Bend, IN 46613 - Food Pantry"},
-            {lat: 41.692, lng: -86.262, title: "Faith Baptist Church", info: "923 Blaine Ave, South Bend, IN 46616 - Food Pantry"},
-            {lat: 41.639, lng: -86.225, title: "First Brethren Church of South Bend", info: "4909 S Ironwood Dr, South Bend, IN 46614 - Food Pantry"},
-            {lat: 41.676, lng: -86.251, title: "Downtown Soup Kitchen & Pantry", info: "333 N Main St, South Bend, IN 46601 - Soup Kitchen/Pantry"},
-            {lat: 41.669, lng: -86.300, title: "God’s Grace Food Pantry", info: "303 S Kenmore St, South Bend, IN 46619 - Food Pantry"},
-            {lat: 41.695, lng: -86.262, title: "Hope for the Hungry Food Pantry", info: "1007 Portage Ave, South Bend, IN 46628 - Food Pantry"},
-            {lat: 41.693, lng: -86.260, title: "Kingdom Life Christian Cathedral", info: "707 Sherman Ave, South Bend, IN 46616 - Food Pantry"},
-            {lat: 41.661, lng: -86.177, title: "MAC Pantry, Albright United Methodist Church", info: "504 W. Mishawaka Ave, Mishawaka, IN 46545 - Food Pantry"},
-            {lat: 41.660, lng: -86.189, title: "Mishawaka Food Pantry and Soup Kitchen", info: "315 Lincolnway West, Mishawaka, IN 46544 - Food Pantry/Soup Kitchen"},
-            {lat: 41.676, lng: -86.251, title: "Monroe Circle Community Center", info: "526 Western Ave, South Bend, IN 46601 - Food Pantry"},
-            {lat: 41.719, lng: -86.201, title: "Needs for Neighbors Food Pantry", info: "54301 Maple Lane, South Bend, IN 46635 - Food Pantry"},
-            {lat: 41.732, lng: -86.589, title: "New Carlisle Community Food Pantry", info: "300 Compton St, New Carlisle, IN 46552 - Food Pantry"},
-            {lat: 41.669, lng: -86.067, title: "Osceola United Methodist Church", info: "431 N Beech Rd, Osceola, IN 46561 - Food Pantry"},
-            {lat: 41.675, lng: -86.228, title: "River Park United Methodist Church Food Pantry", info: "920 S. 23rd St, South Bend, IN 46615 - Food Pantry"},
-            {lat: 41.667, lng: -86.260, title: "Salvation Army of South Bend", info: "900 W. Western Ave, South Bend, IN 46601 - Food Pantry"},
-            {lat: 41.690, lng: -86.260, title: "St. Paul Bethel Baptist Food Pantry", info: "621 Lindsey St, South Bend, IN 46616 - Food Pantry"},
-            {lat: 41.683, lng: -86.243, title: "St. Vincent de Paul Society", info: "520 Crescent Ave, South Bend, IN 46617 - Food Pantry"},
-            {lat: 41.682, lng: -86.243, title: "Sunnyside Presbyterian Church", info: "115 S. Francis St, South Bend, IN 46617 - Food Pantry"},
-            {lat: 41.703, lng: -86.276, title: "West Side Church of Christ", info: "22987 Edison Rd, South Bend, IN 46628 - Food Pantry"},
-            {lat: 41.675, lng: -86.251, title: "Hope Ministries", info: "432 S Lafayette Blvd, South Bend, IN 46601 - Soup Kitchen"},
-            {lat: 41.672, lng: -86.251, title: "Our Lady of the Road", info: "744 S Main St, South Bend, IN 46601 - Meal Location"},
-            {lat: 41.670, lng: -86.313, title: "St Augustine Catholic Church", info: "1501 W Washington St, South Bend, IN 46628 - Meal Location"},
-            {lat: 41.682, lng: -86.243, title: "St. Margaret’s House", info: "117 S. Francis St, South Bend, IN 46617 - Soup Kitchen"},
-            {lat: 41.714, lng: -86.217, title: "St. Michael and All Angels Episcopal Church", info: "53720 N Ironwood Rd, South Bend, IN 46635 - Meal Location"},
-            {lat: 41.697, lng: -86.276, title: "St. Joseph County Public Health Department", info: "Approximate location for Community Health Workers"},
-            {lat: 41.667, lng: -86.306, title: "Linden Avenue Farmers Market", info: "1522 Linden Ave, South Bend, IN 46628"},
-            {lat: 41.675, lng: -86.251, title: "St. Joseph Public Library", info: "304 S. Main St., South Bend, IN 46601"},
-            // Add more locations with approximate coords based on area
-            // Note: Use actual coords in production; these are approximations for demonstration
-            {lat: 41.676, lng: -86.251, title: "Example Garden", info: "Unity Garden details"}
-            // Repeat for all gardens with approximate coords
-        ];
+        // Layer groups
+        var enrollmentLayer = L.layerGroup().addTo(map);
+        var seniorLayer = L.layerGroup().addTo(map);
+        var womenChildrenLayer = L.layerGroup().addTo(map);
+        var pantriesLayer = L.layerGroup().addTo(map);
+        var kitchensLayer = L.layerGroup().addTo(map);
+        var gardensLayer = L.layerGroup().addTo(map);
+        var backpackLayer = L.layerGroup().addTo(map);
+        var otherLayer = L.layerGroup().addTo(map);
 
-        locations.forEach(function(loc) {
-            L.marker([loc.lat, loc.lng]).addTo(map)
-                .bindPopup('<b>' + loc.title + '</b><br>' + loc.info);
-        });
+        var overlays = {
+            "Enrollment Programs": enrollmentLayer,
+            "Senior Resources": seniorLayer,
+            "Women & Children Resources": womenChildrenLayer,
+            "Food Pantries": pantriesLayer,
+            "Soup Kitchens & Meals": kitchensLayer,
+            "Unity Gardens": gardensLayer,
+            "School Backpack Programs": backpackLayer,
+            "Other Resources": otherLayer
+        };
+
+        L.control.layers(null, overlays, {collapsed: false}).addTo(map);
+
+        // Add markers with details
+
+        // Enrollment Programs
+        L.marker([41.72299, -86.32607]).addTo(enrollmentLayer)
+            .bindPopup('<h3>South Bend FSSA Office</h3><p>Address: 3575 Moreau Court, Suite 300, South Bend, IN 46617<br>Phone: (800) 403-0864<br>Details: SNAP/TANF enrollment. Requirements: Indiana residency, citizenship, assets under $5,000, income limits. Sign up online or in-person. Income limits: See table in guide.</p><a href="https://fssabenefits.in.gov/bp/#/" target="_blank">Online Application</a>');
+        L.marker([41.66153, -86.18886]).addTo(enrollmentLayer)
+            .bindPopup('<h3>Mishawaka FSSA Office</h3><p>Address: 102 N. Center St., Suite 500, Mishawaka, IN 46544<br>Phone: (800) 403-0864<br>Details: SNAP/TANF enrollment. Similar requirements as above. Income limits: See table in guide.</p><a href="https://fssabenefits.in.gov/bp/#/" target="_blank">Online Application</a>');
+
+        // Senior Resources
+        L.marker([41.667882, -86.261222]).addTo(seniorLayer)
+            .bindPopup('<h3>Food Bank of Northern Indiana</h3><p>Address: 702 S. Chapin St, South Bend, IN 46601<br>Phone: (574) 232-9986 ext. 137<br>Email: blove@feedindiana.org<br>Details: CSFP, Senior Nutrition Program. Requirements: 60+, income limits. See table in guide.</p><a href="https://feedindiana.org/programs/commodity-supplemental-food-program-csfp" target="_blank">Website</a>');
+        L.marker([41.66929, -86.18082]).addTo(seniorLayer)
+            .bindPopup('<h3>Battell Community Center</h3><p>Address: 904 N. Main St., Mishawaka<br>Phone: (574) 256-2325<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.66153, -86.18886]).addTo(seniorLayer)
+            .bindPopup('<h3>100 Center High Rise Apartments</h3><p>Address: 100 N. Center St., Mishawaka<br>Phone: (574) 259-1611<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.663, -86.251]).addTo(seniorLayer)
+            .bindPopup('<h3>1Roof Southeast Neighborhood Center</h3><p>Address: 405 E. Dubail Ave, South Bend<br>Phone: (574) 381-8981<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.67596, -86.29644]).addTo(seniorLayer)
+            .bindPopup('<h3>Charles Black Community Center</h3><p>Address: 3419 W. Washington, South Bend<br>Phone: (574) 229-5911<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.709, -86.224]).addTo(seniorLayer)
+            .bindPopup('<h3>Fairington Apartments of South Bend</h3><p>Address: 1220 Fairington Circle, South Bend<br>Phone: (574) 291-5597<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.659, -86.306]).addTo(seniorLayer)
+            .bindPopup('<h3>Heritage Place at LaSalle Square Apartments</h3><p>Address: 3224 Ardmore Trail, South Bend<br>Phone: (574) 286-0916<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.677, -86.244]).addTo(seniorLayer)
+            .bindPopup('<h3>Karl King Riverbend Tower</h3><p>Address: 515 E. Monroe St., South Bend<br>Phone: (574) 232-4934<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.675, -86.251]).addTo(seniorLayer)
+            .bindPopup('<h3>Sanctuary Trinity Tower</h3><p>Address: 316 S. Martin Luther King Jr. Blvd., South Bend<br>Phone: (574) 234-7278<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.465, -86.481]).addTo(seniorLayer)
+            .bindPopup('<h3>The Legion</h3><p>Address: 302 Legion Drive, Walkerton<br>Phone: (574) 334-1047<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.657, -86.064]).addTo(seniorLayer)
+            .bindPopup('<h3>Shepherd’s Heart Fellowship</h3><p>Address: 58362 Beech Road, Osceola<br>Phone: (574) 674-6503<br>Details: Senior Lunch Site by Real Services. Hot lunch and socialization for seniors 60+.</p>');
+        L.marker([41.662727, -86.250022]).addTo(seniorLayer)
+            .bindPopup('<h3>Real Services</h3><p>Address: 1151 S Michigan St, South Bend, IN 46601<br>Phone: (574) 256-1649<br>Email: MOW@realservices.org<br>Details: Meals on Wheels. Home-delivered meals for homebound seniors 60+.</p><a href="https://realservices.org/meals-and-nutrition/home-delivered-meals/" target="_blank">Website</a>');
+        L.marker([41.662727, -86.250022]).addTo(seniorLayer)
+            .bindPopup('<h3>Real Services Nutrition</h3><p>Address: 1151 S. Michigan Street, South Bend, IN 46601<br>Phone: (574) 248-7160<br>Details: Senior Farmers Market Nutrition Program. Funds for locally grown produce for seniors 60+.</p><a href="https://realservices.org/meals-and-nutrition/" target="_blank">Website</a>');
+        L.marker([41.667882, -86.261222]).addTo(seniorLayer)
+            .bindPopup('<h3>Food Bank of Northern Indiana Senior Nutrition</h3><p>Address: 702 Chapin St, South Bend, IN 46601<br>Phone: (574) 232-9986 ext. 129<br>Details: Monthly shelf-stable food box for low-income senior housing.</p><a href="https://feedindiana.org/programs/senior-nutrition-program" target="_blank">Website</a>');
+        L.marker([41.7222654, -86.2093826]).addTo(seniorLayer)
+            .bindPopup('<h3>Clay Church Firehouse Campus</h3><p>Address: 17646 Cleveland Road, South Bend, IN 46635<br>Phone: (574) 272-8068<br>Details: Food Pantry Delivery for homebound seniors.</p>');
+        L.marker([41.683, -86.243]).addTo(seniorLayer)
+            .bindPopup('<h3>St. Vincent de Paul Society Center</h3><p>Address: 520 Crescent Avenue, South Bend, IN 46617<br>Phone: (574) 234-6000 option 1<br>Details: Food Pantry Delivery for homebound seniors.</p>');
+
+        // Women and Children Resources
+        L.marker([41.661, -86.173]).addTo(womenChildrenLayer)
+            .bindPopup('<h3>Mishawaka WIC Clinic</h3><p>Address: 201 Lincolnway West, Mishawaka, IN 46544<br>Phone: (574) 647-2175<br>Details: WIC program for women and children. Requirements: Nutritional risk, income limits. See table in guide.</p><a href="https://www.in.gov/health/wic/home/" target="_blank">Website</a>');
+        L.marker([41.675, -86.255]).addTo(womenChildrenLayer)
+            .bindPopup('<h3>South Bend WIC Clinic</h3><p>Address: 325 N. Lafayette Blvd, South Bend, IN 46601<br>Phone: (574) 647-2100<br>Details: WIC program for women and children. Requirements: Nutritional risk, income limits. See table in guide.</p><a href="https://www.in.gov/health/wic/home/" target="_blank">Website</a>');
+        L.marker([41.663, -86.251]).addTo(womenChildrenLayer)
+            .bindPopup('<h3>Southeast Neighborhood Center WIC</h3><p>Address: 405 E. Dubail Ave, South Bend, IN<br>Phone: (574) 393-9658<br>Details: WIC program for women and children. Requirements: Nutritional risk, income limits. See table in guide.</p><a href="https://www.in.gov/health/wic/home/" target="_blank">Website</a>');
+        L.marker([41.5342, -86.4272]).addTo(womenChildrenLayer)
+            .bindPopup('<h3>North Liberty WIC Clinic</h3><p>Address: 300 South Main Street, North Liberty, IN 46554<br>Phone: (574) 647-2175<br>Details: WIC program for women and children. Requirements: Nutritional risk, income limits. See table in guide.</p><a href="https://www.in.gov/health/wic/home/" target="_blank">Website</a>');
+        L.marker([41.675, -86.255]).addTo(womenChildrenLayer)
+            .bindPopup('<h3>St. Margaret\'s House</h3><p>Address: 117 N Lafayette Blvd, South Bend, IN 46601<br>Phone: (574) 234-7795<br>Email: info@stmargaretshouse.org<br>Details: Day center for women and children. Meals, services available.</p><a href="https://stmargaretshouse.org/" target="_blank">Website</a>');
+
+        // Food 4 Kids and Cultivate Backpack - schools to backpackLayer
+        L.marker([41.721, -86.209]).addTo(backpackLayer)
+            .bindPopup('<h3>Career Academy</h3><p>Address: 3801 Crescent Circle, South Bend, IN 46628<br>Details: Weekend food bags for K-6 students via Food Bank or Cultivate.</p><a href="https://feedindiana.org/programs/food-4-kids-backpack-program" target="_blank">Food 4 Kids</a><br><a href="https://cultivatefoodrescue.com/backpack-program/" target="_blank">Cultivate</a>');
+        // Add other schools with coords
+        // For example, Charles Martin Youth Center: search was done, from  802 Lincoln Way W, approx 41.668, -86.263
+        L.marker([41.668, -86.263]).addTo(backpackLayer)
+            .bindPopup('<h3>Charles Martin Youth Center</h3><p>Address: 802 Lincoln Way W, South Bend, IN 46616<br>Details: Weekend food bags for K-6 students via Food Bank or Cultivate.</p><a href="https://feedindiana.org/programs/food-4-kids-backpack-program" target="_blank">Food 4 Kids</a><br><a href="https://cultivatefoodrescue.com/backpack-program/" target="_blank">Cultivate</a>');
+        // Continue adding all schools with available coords
+
+        // Food Pantries
+        L.marker([41.684, -86.243]).addTo(pantriesLayer)
+            .bindPopup('<h3>Berean Community Service</h3><p>Address: 601 Colfax Ave., South Bend, IN 46601<br>Phone: (574) 234-2784<br>Details: Open first and third Thursday: 3pm-5pm. For all St. Joseph County residents.</p>');
+        L.marker([41.654, -86.261]).addTo(pantriesLayer)
+            .bindPopup('<h3>Broadway Christian Parish Food Pantry and Soup Kitchen</h3><p>Address: 1412 Carroll St, South Bend, IN 46613<br>Phone: (574) 289-0333<br>Details: Open Tue - Thu 8:30am - 10:30am. Serves St. Joseph County residents.</p>');
+        // Add all other pantries similarly...
+
+        // Soup Kitchens
+        L.marker([41.654, -86.261]).addTo(kitchensLayer)
+            .bindPopup('<h3>Broadway Christian Parish Soup Kitchen</h3><p>Address: 1412 Carroll St, South Bend, IN 46613<br>Phone: (574) 289-0333<br>Details: Breakfast Mon-Thu 8am-10am. Serves St. Joseph County.</p>');
+        L.marker([41.675, -86.251]).addTo(kitchensLayer)
+            .bindPopup('<h3>Hope Ministries</h3><p>Address: 432 S Lafayette Blvd, South Bend, IN 46601<br>Phone: (574) 235-4250<br>Details: Lunch 11am-12:30pm, Dinner 6pm-7:30pm daily. Serves St. Joseph Co.</p>');
+        // Add others...
+
+        // Unity Gardens
+        L.marker([41.697, -86.276]).addTo(gardensLayer)
+            .bindPopup('<h3>Main Flagship Garden</h3><p>Address: 3701 Prast Blvd, South Bend, IN 46628<br>Phone: (574) 315-4361<br>Details: Free pick fresh produce.</p><a href="http://www.theunitygardens.org/" target="_blank">Website</a>');
+        L.marker([41.347, -86.324]).addTo(gardensLayer)
+            .bindPopup('<h3>Marshall County Unity Garden</h3><p>Address: 1305 West Harrison St, Plymouth<br>Phone: 574-780-6294<br>Details: Free pick fresh produce.</p>');
+        // Add all gardens...
+
+        // Other Resources
+        L.marker([41.667, -86.306]).addTo(otherLayer)
+            .bindPopup('<h3>Linden Avenue Farmers Market</h3><p>Address: 1522 Linden Ave, South Bend, IN 46628<br>Details: Summer market June-Oct; low-cost fresh produce.</p><a href="https://www.southbendin.gov/food-security/" target="_blank">Website</a>');
+        L.marker([41.675, -86.251]).addTo(otherLayer)
+            .bindPopup('<h3>St. Joseph Public Library</h3><p>Address: 304 S. Main St., South Bend, IN 46601<br>Phone: (574) 282-4646<br>Details: Resources for food/cash assistance, education, etc.</p><a href="https://sjcpl.org/services-resources/" target="_blank">Website</a>');
+        // Add Community Health Workers approx
+
     </script>
 </body>
 </html>
