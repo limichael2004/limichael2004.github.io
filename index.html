@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michiana Community Resources Map</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #004284;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color:gold;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 999;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .search-container input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-container select {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-container select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(74, 85, 104, 0.3);
+        }
+        
+        #map {
+            height: calc(100vh - 160px);
+            width: 100%;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .legend h3 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .info-window-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 300px;
+        }
+        
+        .info-window-content h3 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+        
+        .info-window-content p {
+            margin-bottom: 0.3rem;
+            color: #4a5568;
+        }
+        
+        .info-window-content strong {
+            color: #2d3748;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-container {
+                width: 100%;
+                flex-direction: column;
+            }
+            
+            .legend {
+                bottom: 60px;
+                right: 10px;
+                transform: scale(0.9);
+            }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        
+        .submission-notice {
+            background: #f0f4f8;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        
+        .submission-notice p {
+            color: #4a5568;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Michiana Community Resources Map by Michael Li</h1>
+        <p>Find essential services across Berrien, Cass, Elkhart, LaPorte, Marshall, and Starke Counties</p>
+    </div>
+    
+    <div class="controls">
+        <div class="search-container">
+            <input type="text" id="streetInput" placeholder="Street Address (e.g., 123 Main St)">
+            <input type="text" id="cityInput" placeholder="City">
+            <select id="stateInput">
+                <option value="">State</option>
+                <option value="IN">Indiana</option>
+                <option value="MI">Michigan</option>
+            </select>
+            <input type="text" id="zipInput" placeholder="ZIP Code">
+            
+            <select id="resourceFilter">
+                <option value="all">All Resources</option>
+                <option value="food">Food Pantries</option>
+                <option value="shelter">Emergency Shelters</option>
+                <option value="health">Health Clinics</option>
+                <option value="narcan">Narcan Access</option>
+            </select>
+            <button class="btn" onclick="searchNearestResource()">Find Nearest</button>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="showSubmitResourceModal()">Submit Resource</button>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="legend">
+        <h3>Resource Types</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e74c3c;"></div>
+            <span>Food Pantries</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #3498db;"></div>
+            <span>Emergency Shelters</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #2ecc71;"></div>
+            <span>Health Clinics</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f39c12;"></div>
+            <span>Narcan Access</span>
+        </div>
+    </div>
+    
+    <div id="submitResourceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Submit New Resource</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="submission-notice">
+                <p><strong>Note:</strong> Resource submissions will be reviewed before being added to the map. You'll receive an email confirmation once your submission is received.</p>
+            </div>
+            <form id="submitResourceForm">
+                <div class="form-group">
+                    <label for="submitterName">Your Name *</label>
+                    <input type="text" id="submitterName" required>
+                </div>
+                <div class="form-group">
+                    <label for="submitterEmail">Your Email *</label>
+                    <input type="email" id="submitterEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="resourceName">Resource Name *</label>
+                    <input type="text" id="resourceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="resourceType">Type *</label>
+                    <select id="resourceType" required>
+                        <option value="">Select type...</option>
+                        <option value="food">Food Pantry</option>
+                        <option value="shelter">Emergency Shelter</option>
+                        <option value="health">Health Clinic</option>
+                        <option value="narcan">Narcan Access</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="resourceAddress">Street Address *</label>
+                    <input type="text" id="resourceAddress" required>
+                </div>
+                <div class="form-group">
+                    <label for="resourceCity">City *</label>
+                    <input type="text" id="resourceCity" required>
+                </div>
+                <div class="form-group">
+                    <label for="resourceState">State *</label>
+                    <select id="resourceState" required>
+                        <option value="">Select state...</option>
+                        <option value="IN">Indiana</option>
+                        <option value="MI">Michigan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="resourceZip">ZIP Code</label>
+                    <input type="text" id="resourceZip">
+                </div>
+                <div class="form-group">
+                    <label for="resourcePhone">Phone</label>
+                    <input type="tel" id="resourcePhone">
+                </div>
+                <div class="form-group">
+                    <label for="resourceHours">Hours</label>
+                    <textarea id="resourceHours" placeholder="e.g., Monday-Friday: 9:00 AM - 5:00 PM"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="resourceDetails">Additional Details</label>
+                    <textarea id="resourceDetails" placeholder="Any additional information about this resource"></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Submit Resource for Review</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+    
+    <!-- Google Maps JavaScript API -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBB9UV40_TCn8VOQbeuNNjhhlx3sxCpIa4&callback=initMap">
+    </script>
+    
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script>
+        let map;
+        let markers = [];
+        let currentLocationMarker = null;
+        let infoWindow;
+        let geocoder;
+        
+        // Initialize EmailJS with your public key
+        emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // You'll need to sign up at EmailJS and get your key
+        
+        // Resource data structure
+        const resources = [
+            // Food Pantries - Berrien County, MI
+            {
+                name: "Harbor of Hope Pantry",
+                type: "food",
+                address: "769 Pipestone, Benton Harbor, MI 49022",
+                lat: 42.1167,
+                lng: -86.4542,
+                phone: "269-277-2899",
+                hours: "Call for hours"
+            },
+            {
+                name: "The Salvation Army - Benton Harbor",
+                type: "food",
+                address: "233 Michigan St., Benton Harbor, MI 49022",
+                lat: 42.1169,
+                lng: -86.4547,
+                phone: "269-927-1353",
+                hours: "Mon-Thu: 9:00 AM - 4:30 PM; Fri: 9:00 AM - 2:30 PM"
+            },
+            {
+                name: "God's Abundant Pantry",
+                type: "food",
+                address: "9246 Kephart Ln, Berrien Springs, MI 49103",
+                lat: 41.9464,
+                lng: -86.3389,
+                phone: "269-635-3636",
+                hours: "Call for hours"
+            },
+            {
+                name: "Neighbor To Neighbor",
+                type: "food",
+                address: "9147 US-31, Berrien Springs, MI 49103",
+                lat: 41.9458,
+                lng: -86.3394,
+                phone: "269-468-6062",
+                hours: "Call for hours"
+            },
+            {
+                name: "Red Bud Ministries",
+                type: "food",
+                address: "708 Red Bud Tr North, Buchanan, MI 49107",
+                lat: 41.8272,
+                lng: -86.3611,
+                phone: "269-471-7411",
+                hours: "Call for hours"
+            },
+            {
+                name: "The Salvation Army - Niles Corps",
+                type: "food",
+                address: "424 N. 15th St., Niles, MI 49120",
+                lat: 41.8331,
+                lng: -86.2558,
+                phone: "269-684-2660",
+                hours: "Mon & Fri: 1:00-3:00 PM; Tue & Thu: 9:00-11:00 AM"
+            },
+            
+            // Food Pantries - Cass County, MI
+            {
+                name: "Helping Hands of Cass County",
+                type: "food",
+                address: "408 E State Street, Cassopolis, MI 49031",
+                lat: 41.9117,
+                lng: -86.0100,
+                phone: "269-445-8104",
+                hours: "Call for current hours"
+            },
+            {
+                name: "Action Ministry Center",
+                type: "food",
+                address: "301 Main St, Dowagiac, MI 49047",
+                lat: 41.9842,
+                lng: -86.1089,
+                phone: "269-782-0000",
+                hours: "Call for hours"
+            },
+            
+            // Food Pantries - Elkhart County, IN
+            {
+                name: "Church Community Services",
+                type: "food",
+                address: "907 Oakland Avenue, Elkhart, IN 46516",
+                lat: 41.6889,
+                lng: -85.9669,
+                phone: "574-295-3673",
+                hours: "Mon & Wed: 11:00 AM - 3:00 PM; Thu: 11:00 AM - 3:00 PM & 4:00 PM - 7:00 PM"
+            },
+            {
+                name: "The Salvation Army - Elkhart",
+                type: "food",
+                address: "300 N. Main Street, Elkhart, IN 46516",
+                lat: 41.6881,
+                lng: -85.9767,
+                phone: "574-970-0088",
+                hours: "Mon & Fri: 1:00 PM - 3:00 PM; Wed: 8:30 AM - 11:45 AM"
+            },
+            {
+                name: "Faith Mission Soup Kitchen",
+                type: "food",
+                address: "801 Benham Avenue, Elkhart, IN 46516",
+                lat: 41.6920,
+                lng: -85.9533,
+                phone: "574-293-3406",
+                hours: "Call for meal times"
+            },
+            {
+                name: "The Window",
+                type: "food",
+                address: "223 S. Main, Goshen, IN 46526",
+                lat: 41.5822,
+                lng: -85.8347,
+                phone: "574-533-9680",
+                hours: "Pantry: Mon & Fri: 1:00-3:30 PM; Tue & Thu: 9:00-10:30 AM; Kitchen: Mon-Fri: 11:30 AM-12:30 PM"
+            },
+            
+            // Food Pantries - LaPorte County, IN
+            {
+                name: "Trinity Community Food Bank",
+                type: "food",
+                address: "600 Franklin Street, Michigan City, IN 46360",
+                lat: 41.7075,
+                lng: -86.8950,
+                phone: "219-874-4355",
+                hours: "Wednesday: 11:00 AM - 1:00 PM"
+            },
+            {
+                name: "The Salvation Army - La Porte",
+                type: "food",
+                address: "3240 Monroe, La Porte, IN 46350",
+                lat: 41.6106,
+                lng: -86.7225,
+                phone: "219-326-5342",
+                hours: "Mon: 1:00-3:00 PM; Tue: 10:00 AM-12:00 PM; Thu: 5:00-7:00 PM"
+            },
+            {
+                name: "The Pax Center",
+                type: "food",
+                address: "605 Washington Street, La Porte, IN 46350",
+                lat: 41.6097,
+                lng: -86.7231,
+                phone: "219-575-7842",
+                hours: "Pantry: Wed & Thu: 12:00-1:30 PM; Sat: 9:00-10:30 AM; Kitchen: Mon: 11:30 AM-1:30 PM; Wed: 5:00-6:30 PM"
+            },
+            
+            // Food Pantries - Marshall County, IN
+            {
+                name: "Marshall County Neighborhood Center",
+                type: "food",
+                address: "201 N Plum St, Plymouth, IN 46563",
+                lat: 41.3436,
+                lng: -86.3089,
+                phone: "574-936-3388",
+                hours: "Mon: 1:00-3:00 PM; Wed: 5:00-7:00 PM; Fri: 9:00-11:00 AM"
+            },
+            {
+                name: "Bread of Life Food Pantry",
+                type: "food",
+                address: "6770 N Michigan St, Plymouth, IN 46563",
+                lat: 41.3431,
+                lng: -86.3097,
+                phone: "574-936-1006",
+                hours: "Mon: 5:00-7:00 PM; Wed & Fri: 1:00-3:00 PM"
+            },
+            
+            // Food Pantries - Starke County, IN
+            {
+                name: "Community Services of Starke County",
+                type: "food",
+                address: "311 E. Culver Road, Knox, IN 46534",
+                lat: 41.2958,
+                lng: -86.6250,
+                phone: "574-772-7070",
+                hours: "Mon, Tue, Thu, Fri: 10:00 AM - 2:00 PM"
+            },
+            {
+                name: "Our Redeemer Lutheran Church",
+                type: "food",
+                address: "1600 South Heaton Street, Knox, IN 46534",
+                lat: 41.2961,
+                lng: -86.6247,
+                phone: "574-772-4186",
+                hours: "Mon & Wed: 9:00 AM - 1:00 PM"
+            },
+            
+            // Emergency Shelters
+            {
+                name: "Emergency Shelter Services, Inc.",
+                type: "shelter",
+                address: "645 Pipestone Street, Benton Harbor, MI 49022",
+                lat: 42.1167,
+                lng: -86.4542,
+                phone: "269-277-5055",
+                hours: "24/7 Line for Shelter Needs",
+                details: "Family shelter"
+            },
+            {
+                name: "The Salvation Army - Benton Harbor Men's Shelter",
+                type: "shelter",
+                address: "232 Michigan St., Benton Harbor, MI 49022",
+                lat: 42.1169,
+                lng: -86.4547,
+                phone: "269-927-1353",
+                hours: "Nightly: 5:00 PM - 9:00 AM",
+                details: "Single men only"
+            },
+            {
+                name: "Faith Mission of Elkhart",
+                type: "shelter",
+                address: "801 Benham Avenue, Elkhart, IN 46516",
+                lat: 41.6920,
+                lng: -85.9533,
+                phone: "574-293-3406",
+                hours: "Intake: 7:00 PM - 8:00 PM daily",
+                details: "Men, women, and families"
+            },
+            {
+                name: "First Light Mission",
+                type: "shelter",
+                address: "105 S Third Street, Goshen, IN 46526",
+                lat: 41.5819,
+                lng: -85.8350,
+                phone: "574-534-2300",
+                hours: "Call for intake",
+                details: "Families, women and children"
+            },
+            {
+                name: "Sand Castle Shelter",
+                type: "shelter",
+                address: "1005 West 8th St., Michigan City, IN 46360",
+                lat: 41.7092,
+                lng: -86.9103,
+                phone: "219-879-2552",
+                hours: "Call for information",
+                details: "Families"
+            },
+            
+            // Health Clinics
+            {
+                name: "Berrien County Health Department - Benton Harbor",
+                type: "health",
+                address: "2149 E. Napier Ave., Benton Harbor, MI 49022",
+                lat: 42.1161,
+                lng: -86.4536,
+                phone: "269-926-7121",
+                hours: "Mon-Thu: 8:00 AM - 5:00 PM; Fri: 8:00 AM - 2:30 PM"
+            },
+            {
+                name: "Berrien County Health Department - Niles",
+                type: "health",
+                address: "1205 N. Front St., Niles, MI 49120",
+                lat: 41.8333,
+                lng: -86.2556,
+                phone: "269-684-2800",
+                hours: "Mon-Thu: 8:00 AM - 5:00 PM; Fri: 8:00 AM - 2:30 PM"
+            },
+            {
+                name: "Center for Healing and Hope",
+                type: "health",
+                address: "902 S Main St, Goshen, IN 46526",
+                lat: 41.5817,
+                lng: -85.8344,
+                phone: "574-534-4744",
+                hours: "Mon-Fri: 8:30 AM - 12:00 PM & 1:00 PM - 4:30 PM"
+            },
+            
+            // Narcan Access Points
+            {
+                name: "Berrien County Health Dept. Narcan Vending Machine",
+                type: "narcan",
+                address: "1205 N. Front St., Niles, MI 49120",
+                lat: 41.8333,
+                lng: -86.2556,
+                phone: "269-684-2800",
+                hours: "Mon-Fri: 8:30 AM - 5:00 PM",
+                details: "Free Narcan vending machine"
+            },
+            {
+                name: "Marshall County Community Resource Center",
+                type: "narcan",
+                address: "510 West Adams Street #30, Plymouth, IN 46563",
+                lat: 41.3436,
+                lng: -86.3133,
+                phone: "Call for info",
+                hours: "Naloxone box available",
+                details: "Free Narcan kit in naloxone box"
+            }
+        ];
+        
+        // Icon colors for different resource types
+        const iconColors = {
+            food: '#e74c3c',      // Red
+            shelter: '#3498db',    // Blue
+            health: '#2ecc71',     // Green
+            narcan: '#f39c12'      // Orange
+        };
+        
+        // Initialize Google Map
+        function initMap() {
+            // Create map centered on Michiana region
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 41.68, lng: -86.25 },
+                zoom: 9,
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true
+            });
+            
+            // Initialize geocoder
+            geocoder = new google.maps.Geocoder();
+            
+            // Create single InfoWindow to reuse
+            infoWindow = new google.maps.InfoWindow();
+            
+            // Add all resources to map
+            addResourcesToMap();
+        }
+        
+        // Create custom marker icon
+        function createCustomIcon(color) {
+            return {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: color,
+                fillOpacity: 0.9,
+                strokeColor: 'white',
+                strokeWeight: 2,
+                scale: 10
+            };
+        }
+        
+        // Add resources to map
+        function addResourcesToMap(resourceList = resources) {
+            // Clear existing markers
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            
+            resourceList.forEach(resource => {
+                const marker = new google.maps.Marker({
+                    position: { lat: resource.lat, lng: resource.lng },
+                    map: map,
+                    icon: createCustomIcon(iconColors[resource.type]),
+                    title: resource.name
+                });
+                
+                // Store resource data with marker
+                marker.resourceData = resource;
+                
+                // Add click listener for info window
+                marker.addListener('click', () => {
+                    const content = `
+                        <div class="info-window-content">
+                            <h3>${resource.name}</h3>
+                            <p><strong>Type:</strong> ${resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}</p>
+                            <p><strong>Address:</strong> ${resource.address}</p>
+                            <p><strong>Phone:</strong> ${resource.phone}</p>
+                            <p><strong>Hours:</strong> ${resource.hours}</p>
+                            ${resource.details ? `<p><strong>Details:</strong> ${resource.details}</p>` : ''}
+                        </div>
+                    `;
+                    infoWindow.setContent(content);
+                    infoWindow.open(map, marker);
+                });
+                
+                markers.push(marker);
+            });
+        }
+        
+        // Search for nearest resource
+        function searchNearestResource() {
+            const street = document.getElementById('streetInput').value;
+            const city = document.getElementById('cityInput').value;
+            const state = document.getElementById('stateInput').value;
+            const zip = document.getElementById('zipInput').value;
+            const resourceType = document.getElementById('resourceFilter').value;
+            
+            const addressParts = [street, city, state, zip].filter(Boolean);
+            if (addressParts.length === 0) {
+                showNotification('Please enter at least a street, city, or ZIP.', 'error');
+                return;
+            }
+            
+            const address = addressParts.join(', ');
+            
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    const userLocation = results[0].geometry.location;
+                    
+                    // Remove previous user location marker if exists
+                    if (currentLocationMarker) {
+                        currentLocationMarker.setMap(null);
+                    }
+                    
+                    // Add user location marker
+                    currentLocationMarker = new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                            fillColor: '#9b59b6',
+                            fillOpacity: 1,
+                            strokeColor: 'white',
+                            strokeWeight: 2,
+                            scale: 8
+                        },
+                        title: 'Your Location'
+                    });
+                    
+                    // Filter resources if needed
+                    let searchResources = resources;
+                    if (resourceType !== 'all') {
+                        searchResources = resources.filter(r => r.type === resourceType);
+                    }
+                    
+                    // Find nearest resource
+                    let nearestResource = null;
+                    let minDistance = Infinity;
+                    let nearestMarker = null;
+                    
+                    searchResources.forEach(resource => {
+                        const distance = calculateDistance(
+                            userLocation.lat(), 
+                            userLocation.lng(), 
+                            resource.lat, 
+                            resource.lng
+                        );
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestResource = resource;
+                        }
+                    });
+                    
+                    if (nearestResource) {
+                        // Find the marker for this resource
+                        nearestMarker = markers.find(m => 
+                            m.resourceData.name === nearestResource.name && 
+                            m.resourceData.address === nearestResource.address
+                        );
+                        
+                        if (nearestMarker) {
+                            // Create bounds to show both markers
+                            const bounds = new google.maps.LatLngBounds();
+                            bounds.extend(userLocation);
+                            bounds.extend(nearestMarker.getPosition());
+                            map.fitBounds(bounds);
+                            
+                            // Open info window for nearest resource
+                            setTimeout(() => {
+                                google.maps.event.trigger(nearestMarker, 'click');
+                            }, 500);
+                            
+                            showNotification(`Nearest ${resourceType === 'all' ? 'resource' : resourceType}: ${nearestResource.name} (${minDistance.toFixed(1)} miles away)`);
+                        }
+                    } else {
+                        showNotification('No resources found matching your criteria', 'error');
+                    }
+                } else {
+                    showNotification('Address not found. Please try a more specific address.', 'error');
+                }
+            });
+        }
+        
+        // Calculate distance between two points
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 3959; // Radius of Earth in miles
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+        
+        // Filter resources by type
+        document.getElementById('resourceFilter').addEventListener('change', function() {
+            const filterValue = this.value;
+            if (filterValue === 'all') {
+                addResourcesToMap();
+            } else {
+                const filteredResources = resources.filter(r => r.type === filterValue);
+                addResourcesToMap(filteredResources);
+            }
+        });
+        
+        // Modal functions
+        function showSubmitResourceModal() {
+            document.getElementById('submitResourceModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('submitResourceModal').style.display = 'none';
+            document.getElementById('submitResourceForm').reset();
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('submitResourceModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Handle form submission with email
+        document.getElementById('submitResourceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Gather form data
+            const submissionData = {
+                submitterName: document.getElementById('submitterName').value,
+                submitterEmail: document.getElementById('submitterEmail').value,
+                resourceName: document.getElementById('resourceName').value,
+                resourceType: document.getElementById('resourceType').value,
+                resourceAddress: document.getElementById('resourceAddress').value,
+                resourceCity: document.getElementById('resourceCity').value,
+                resourceState: document.getElementById('resourceState').value,
+                resourceZip: document.getElementById('resourceZip').value || 'Not provided',
+                resourcePhone: document.getElementById('resourcePhone').value || 'Not provided',
+                resourceHours: document.getElementById('resourceHours').value || 'Not provided',
+                resourceDetails: document.getElementById('resourceDetails').value || 'None',
+                submissionDate: new Date().toLocaleString()
+            };
+            
+            // Format email content
+            const emailContent = `
+New Resource Submission from Michiana Resources Map
+
+Submitter Information:
+- Name: ${submissionData.submitterName}
+- Email: ${submissionData.submitterEmail}
+- Date: ${submissionData.submissionDate}
+
+Resource Information:
+- Name: ${submissionData.resourceName}
+- Type: ${submissionData.resourceType}
+- Address: ${submissionData.resourceAddress}
+- City: ${submissionData.resourceCity}
+- State: ${submissionData.resourceState}
+- ZIP: ${submissionData.resourceZip}
+- Phone: ${submissionData.resourcePhone}
+- Hours: ${submissionData.resourceHours}
+- Additional Details: ${submissionData.resourceDetails}
+
+Full Address: ${submissionData.resourceAddress}, ${submissionData.resourceCity}, ${submissionData.resourceState} ${submissionData.resourceZip}
+            `;
+            
+            // Since we can't directly send emails from client-side JavaScript,
+            // we'll use a mailto link as a fallback or you can integrate with EmailJS
+            
+            // Option 1: Using mailto (simple but opens email client)
+            const mailtoLink = `mailto:limichael2022@gmail.com?subject=New Resource Submission - ${submissionData.resourceName}&body=${encodeURIComponent(emailContent)}`;
+            window.location.href = mailtoLink;
+            
+            // Option 2: If you set up EmailJS (recommended for seamless experience)
+            // Uncomment this section after setting up EmailJS account
+            /*
+            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+                to_email: "limichael2022@gmail.com",
+                from_name: submissionData.submitterName,
+                from_email: submissionData.submitterEmail,
+                resource_name: submissionData.resourceName,
+                resource_type: submissionData.resourceType,
+                full_address: `${submissionData.resourceAddress}, ${submissionData.resourceCity}, ${submissionData.resourceState} ${submissionData.resourceZip}`,
+                phone: submissionData.resourcePhone,
+                hours: submissionData.resourceHours,
+                details: submissionData.resourceDetails,
+                submission_date: submissionData.submissionDate
+            }).then(function(response) {
+                showNotification('Resource submission sent successfully! We will review and add it to the map soon.');
+                closeModal();
+            }, function(error) {
+                showNotification('Failed to send submission. Please try again or email directly.', 'error');
+                console.error('Email error:', error);
+            });
+            */
+            
+            showNotification('Opening your email client to send submission...');
+            setTimeout(() => {
+                closeModal();
+            }, 2000);
+        });
+        
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? '#e74c3c' : '#48bb78';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+        
+        // Handle Enter key in search fields
+        ['streetInput', 'cityInput', 'zipInput'].forEach(id => {
+            document.getElementById(id).addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchNearestResource();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
